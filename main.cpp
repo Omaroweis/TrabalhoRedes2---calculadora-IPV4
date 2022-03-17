@@ -76,6 +76,7 @@ bool validaMascaraDecimal(string mascara) { // retorna true para invalida
 	stringstream ss(mascara);
 	string word;
 	int cont = 0;
+	bool flag = false;
 	while (ss >> word) {
 
 
@@ -84,6 +85,9 @@ bool validaMascaraDecimal(string mascara) { // retorna true para invalida
 			return 1;
 		if (word[0] == '0' && word.size() > 1)
 			return 1;
+		if (word[0] == '0')
+			flag = true;
+
 
 		int num = atoi(word.c_str());
 		if (num > 255)
@@ -93,7 +97,6 @@ bool validaMascaraDecimal(string mascara) { // retorna true para invalida
 		int word_num = stoi(word);
 		string binario = toBinary(word_num);
 
-		bool flag = false;
 		for (int k = 0; k < binario.size(); k++)
 		{
 			if (binario[k] == '0')
@@ -149,15 +152,26 @@ string getDecimalByCidr(int mascara_num)
 
 
 string getRede(string octeto, int quebrados) {
-	int	oct_num = stoi(octeto);
+	int oct_num;
+	try {
+		oct_num = stoi(octeto);
+	}
+	catch (exception e) {
+		oct_num = 0;
+	}
 	string bin = toBinary(oct_num);
 	for (int i = quebrados; i < bin.size(); i++) {
 		bin[i] = '0';
 	}
-
-	int bin_num = stoi(bin, 0, 2);
+	int bin_num;
+	try {
+		bin_num = stoi(bin, 0, 2);
+	}
+	catch (exception e) {
+		bin_num = 0;
+	}
 	return to_string(bin_num);
-	
+
 }
 string getBroadCast(string octeto, int quebrados) {
 	int	oct_num = stoi(octeto);
@@ -175,12 +189,12 @@ string getBroadCast(string octeto, int quebrados) {
 }
 int main() {
 
-	cout << "DIGITE 1 PARA ENDERECAMENTO COM CLASSES OU 0 PARA ENDERECAMENTO SEM CLASSES\n";
+	cout << " DIGITE 1 PARA ENDERECAMENTO COM CLASSES OU 0 PARA ENDERECAMENTO SEM CLASSES\n";
 	int c;
 	cin >> c;
 	string* vet_octetos = new string[4];
 	while (c != 0 && c != 1) {
-		cout << "ENTRADA INVALIDA< DIGITE 1 PARA ENDERECAMENTO COM CLASSES OU 0 PARA ENDERECAMENTO SEM CLASSES\n";
+		cout << "ENTRADA INVALIDA DIGITE 1 PARA ENDERECAMENTO COM CLASSES OU 0 PARA ENDERECAMENTO SEM CLASSES\n";
 		cin >> c;
 	}
 	if (c == 1) // com classes
@@ -268,7 +282,7 @@ int main() {
 			int mascara_decimal_invalida = validaMascaraDecimal(mascara);
 			while (mascara_decimal_invalida)
 			{
-				cout<< "MASCARA INVALIDA! DIGITE A MASCARA NO FORMADO DECIMAL(n.n.n.n)\n";
+				cout << "MASCARA INVALIDA! DIGITE A MASCARA NO FORMADO DECIMAL(n.n.n.n)\n";
 				cin >> mascara;
 				mascara_decimal_invalida = validaMascaraDecimal(mascara);
 			}
@@ -287,7 +301,15 @@ int main() {
 
 			vet = getVet_octetos(entrada);
 			int pos = mascara_cidr / 8;
-			string rede = getRede(vet[pos], mascara_cidr % 8);
+			string rede;
+			try {
+				rede = getRede(vet[pos], mascara_cidr % 8);
+			}
+			catch (exception e) {
+				cout << e.what() << endl;
+				
+
+			}
 			cout << "ENDERECO REDE: ";
 			for (int i = 0; i < pos; i++) {
 				cout << vet[i] << ".";
@@ -374,7 +396,7 @@ int main() {
 			cout << "NUMERO DE HOSTS DA SUBREDE: " << pow(2, 32 - mascara_num) - 2 << endl;
 			string* vet = getVet_octetos(entrada);
 			int pos = mascara_num / 8;
-			string rede = getRede(vet[pos], mascara_num%8);
+			string rede = getRede(vet[pos], mascara_num % 8);
 			cout << "ENDERECO REDE: ";
 			for (int i = 0; i < pos; i++) {
 				cout << vet[i] << ".";
@@ -407,7 +429,7 @@ int main() {
 			else {
 				cout << rede;
 				for (int i = pos + 1; i < 4; i++) {
-					i == 3? cout<<".1" : cout << ".0";
+					i == 3 ? cout << ".1" : cout << ".0";
 				}
 			}
 			cout << endl;
